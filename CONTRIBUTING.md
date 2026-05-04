@@ -52,8 +52,14 @@ pnpm install
 
 ### 2. Start the Cosmos DB Emulator
 
-Follow the [official guide](https://learn.microsoft.com/azure/cosmos-db/local-emulator) to start the emulator.  
-The default endpoint is `https://localhost:8081` and the well-known emulator key is used automatically via `local.settings.json`.
+Follow the [official guide](https://learn.microsoft.com/azure/cosmos-db/local-emulator) to start the emulator.
+
+Notes for installation on Ubuntu 24.04 (Noble) running in Windows System for Linux2 (WSL2):
+- Docker Installation into Ubuntu WSL2: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+- Emulator container installation: https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-develop-emulator#install-the-emulator
+
+The default endpoint is `https://localhost:8081` with a UX exposed at `https://localhost:8081/_explorer/index.html`
+
 
 Seed the five containers (`Users`, `Households`, `Weeks`, `Meals`, `GroceryItems`) and the pre-seeded household document before running the API.
 
