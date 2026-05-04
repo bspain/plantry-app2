@@ -1,4 +1,4 @@
-# Root-level ESLint config
+# EditorConfig: https://EditorConfig.org
 root = true
 
 [*]
