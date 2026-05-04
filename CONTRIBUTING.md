@@ -63,6 +63,8 @@ The default endpoint is `https://localhost:8081` with a UX exposed at `https://l
 
 Seed the five containers (`Users`, `Households`, `Weeks`, `Meals`, `GroceryItems`) and the pre-seeded household document before running the API.
 
+- [ ] TODO: Validate remaining sections after more phases of the plan are completed.
+
 ### 3. Configure the API
 
 Copy the template and fill in the emulator values:
