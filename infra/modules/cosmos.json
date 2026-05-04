@@ -1,0 +1,128 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.42.1.51946",
+      "templateHash": "10600440485508105997"
+    }
+  },
+  "parameters": {
+    "accountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Cosmos DB account name (globally unique, 3–44 lowercase alphanumeric or hyphens)"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure region for the Cosmos DB account"
+      }
+    }
+  },
+  "variables": {
+    "containerDefs": [
+      {
+        "name": "Users",
+        "partitionKey": "/id"
+      },
+      {
+        "name": "Households",
+        "partitionKey": "/id"
+      },
+      {
+        "name": "Weeks",
+        "partitionKey": "/householdId"
+      },
+      {
+        "name": "Meals",
+        "partitionKey": "/weekId"
+      },
+      {
+        "name": "GroceryItems",
+        "partitionKey": "/weekId"
+      }
+    ]
+  },
+  "resources": {
+    "cosmosAccount": {
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "apiVersion": "2023-04-15",
+      "name": "[parameters('accountName')]",
+      "location": "[parameters('location')]",
+      "kind": "GlobalDocumentDB",
+      "properties": {
+        "databaseAccountOfferType": "Standard",
+        "consistencyPolicy": {
+          "defaultConsistencyLevel": "Session"
+        },
+        "locations": [
+          {
+            "locationName": "[parameters('location')]",
+            "failoverPriority": 0,
+            "isZoneRedundant": false
+          }
+        ],
+        "capabilities": [
+          {
+            "name": "EnableServerless"
+          }
+        ],
+        "enableFreeTier": false,
+        "disableKeyBasedMetadataWriteAccess": false
+      }
+    },
+    "database": {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+      "apiVersion": "2023-04-15",
+      "name": "[format('{0}/{1}', parameters('accountName'), 'plantry')]",
+      "properties": {
+        "resource": {
+          "id": "plantry"
+        }
+      },
+      "dependsOn": [
+        "cosmosAccount"
+      ]
+    },
+    "containers": {
+      "copy": {
+        "name": "containers",
+        "count": "[length(variables('containerDefs'))]"
+      },
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2023-04-15",
+      "name": "[format('{0}/{1}/{2}', parameters('accountName'), 'plantry', variables('containerDefs')[copyIndex()].name)]",
+      "properties": {
+        "resource": {
+          "id": "[variables('containerDefs')[copyIndex()].name]",
+          "partitionKey": {
+            "paths": [
+              "[variables('containerDefs')[copyIndex()].partitionKey]"
+            ],
+            "kind": "Hash"
+          }
+        }
+      },
+      "dependsOn": [
+        "database"
+      ]
+    }
+  },
+  "outputs": {
+    "accountName": {
+      "type": "string",
+      "value": "[parameters('accountName')]"
+    },
+    "connectionString": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Primary connection string for Key Vault storage"
+      },
+      "value": "[listConnectionStrings('cosmosAccount', '2023-04-15').connectionStrings[0].connectionString]"
+    }
+  }
+}

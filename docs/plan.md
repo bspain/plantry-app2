@@ -30,14 +30,14 @@
 - [x] 4. Create README.md and CONTRIBUTING.md
 
 ### Phase 1: Infrastructure (Bicep)
-- [ ] 5. Bicep module: Cosmos DB (serverless, NoSQL API) — 5 containers with partition keys
-- [ ] 6. Bicep module: Azure Functions App (Node.js 20 LTS)
-- [ ] 7. Bicep module: Azure Web PubSub (Free tier)
-- [ ] 8. Bicep module: Azure Static Web Apps (linked to Functions)
-- [ ] 9. Bicep module: Azure Key Vault (store Cosmos connection string, PubSub connection string)
-- [ ] 10. Bicep module: App Registration (personal MS accounts, redirect URIs)
-- [ ] 11. Parameters files for dev + prod
-- [ ] 12. GitHub Actions workflow: deploy-infra.yml (manual trigger + on infra changes)
+- [x] 5. Bicep module: Cosmos DB (serverless, NoSQL API) — 5 containers with partition keys
+- [x] 6. Bicep module: Azure Functions App (Node.js 20 LTS)
+- [x] 7. Bicep module: Azure Web PubSub (Free tier)
+- [x] 8. Bicep module: Azure Static Web Apps (linked to Functions)
+- [x] 9. Bicep module: Azure Key Vault (store Cosmos connection string, PubSub connection string)
+- [x] 10. Bicep module: App Registration (personal MS accounts, redirect URIs)
+- [x] 11. Parameters files for dev + prod
+- [x] 12. GitHub Actions workflow: deploy-infra.yml (manual trigger + on infra changes)
 
 ### Phase 2: Azure App Registration
 - [ ] 13. App registration: personal accounts (consumers tenant), expose API scope (access_as_user)
