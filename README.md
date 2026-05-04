@@ -18,12 +18,13 @@ Key capabilities:
 
 | Layer | Technology |
 |---|---|
-| Frontend | React (PWA), MSAL.js |
-| Authentication | Microsoft Entra ID (formerly Azure AD) |
-| API | Azure Functions (Node.js / TypeScript) |
-| Database | Azure Cosmos DB |
+| Frontend | React 18 + Vite (PWA), TanStack Query, Zustand, Tailwind CSS, shadcn/ui |
+| Authentication | Microsoft Entra ID – personal accounts (MSAL.js) |
+| API | Azure Functions v4 (Node.js 20 / TypeScript) |
+| Database | Azure Cosmos DB (NoSQL, serverless) |
 | Real-time | Azure Web PubSub |
-| Hosting | Azure Static Web Apps |
+| Hosting | Azure Static Web Apps + standalone Functions App |
+| IaC / CI/CD | Bicep + GitHub Actions |
 
 For full requirements and architectural decisions, please read:
 

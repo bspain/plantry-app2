@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# build outputs
+dist/
+build/
+.turbo/
+
+# environment & secrets
+.env
+.env.*
+!.env.example
+local.settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# test coverage
+coverage/
