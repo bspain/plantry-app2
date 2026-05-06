@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.42.1.51946",
+      "templateHash": "10792342838196729760"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure Web PubSub resource name (3–63 alphanumeric or hyphens)"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure region for Web PubSub"
+      }
+    }
+  },
+  "resources": {
+    "webPubSub": {
+      "type": "Microsoft.SignalRService/webPubSub",
+      "apiVersion": "2023-02-01",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Free_F1",
+        "tier": "Free",
+        "capacity": 1
+      },
+      "properties": {
+        "publicNetworkAccess": "Enabled"
+      }
+    }
+  },
+  "outputs": {
+    "name": {
+      "type": "string",
+      "value": "[parameters('name')]"
+    },
+    "connectionString": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Primary connection string for Key Vault storage"
+      },
+      "value": "[listKeys('webPubSub', '2023-02-01').primaryConnectionString]"
+    }
+  }
+}

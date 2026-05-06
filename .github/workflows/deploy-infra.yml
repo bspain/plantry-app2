@@ -1,0 +1,113 @@
+name: Deploy Infrastructure
+
+on:
+  # Manual trigger — choose environment via workflow input
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+
+  # Automatic trigger — deploy to dev on any infra change pushed to main
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+
+concurrency:
+  group: deploy-infra-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write   # Required for OIDC token exchange with Azure
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Deploy to dev
+  # Triggered automatically on push to main (infra changes) or manually.
+  # ---------------------------------------------------------------------------
+  deploy-dev:
+    name: Deploy — dev
+    runs-on: ubuntu-latest
+    environment: dev
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Restore Bicep extensions
+        run: az bicep restore --file infra/main.bicep
+
+      - name: Ensure resource group exists
+        run: |
+          az group create \
+            --name "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --location eastus2 \
+            --output none
+
+      - name: Deploy Bicep — dev
+        run: |
+          az deployment group create \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters infra/parameters/dev.bicepparam \
+            --mode Incremental \
+            --name "infra-dev-${{ github.run_number }}"
+
+  # ---------------------------------------------------------------------------
+  # Deploy to prod
+  # Manual trigger only — requires explicit environment selection.
+  # Protected by the GitHub "prod" environment (add required reviewers in
+  # Settings → Environments → prod).
+  # ---------------------------------------------------------------------------
+  deploy-prod:
+    name: Deploy — prod
+    runs-on: ubuntu-latest
+    environment: prod
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Restore Bicep extensions
+        run: az bicep restore --file infra/main.bicep
+
+      - name: Ensure resource group exists
+        run: |
+          az group create \
+            --name "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --location eastus2 \
+            --output none
+
+      - name: Deploy Bicep — prod
+        run: |
+          az deployment group create \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters infra/parameters/prod.bicepparam \
+            --mode Incremental \
+            --name "infra-prod-${{ github.run_number }}"
